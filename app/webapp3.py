@@ -4,22 +4,28 @@ import plotly.graph_objects as go
 from sklearn.ensemble import RandomForestClassifier
 
 def get_clean_data():
+
     df = pd.read_csv('data.csv')
     df = df.drop(['Unnamed: 32', 'id'], axis=1)
     df['diagnosis'] = df['diagnosis'].map({'M': 1, 'B': 0})  # convert Malignant to 1 and benign to 0
     return df
 
 def add_sidebar(data):
+
     st.sidebar.header("Cell Nuclei Measurements")
     input_dict = {}
     column_names = data.columns[1:]
     sliders_labels = [(f"{column} (mean)", column) for column in column_names]
+
     for label, key in sliders_labels:
+
         input_dict[key] = st.sidebar.slider(
+
             label=label,
             min_value=float(0),
             max_value=float(data[key].max()),
             value=float(data[key].mean())
+
         )
     return input_dict
 
@@ -28,6 +34,7 @@ def get_scaled_values(input_dict):
     X = data.drop(['diagnosis'], axis=1)
     scaled_dict = {}
     for key, value in input_dict.items():
+
         max_val = X[key].max()
         min_val = X[key].min()
         scaled_value = (value - min_val) / (max_val - min_val)
@@ -36,7 +43,9 @@ def get_scaled_values(input_dict):
     return scaled_dict
 
 def get_radar_chart(input_data):
+
     input_data = get_scaled_values(input_data)
+
     categories = ['Radius', 'Texture', 'Perimeter', 'Area', 'Smoothness', 'Compactness', 'Concavity', 'Concave Points',
                   'Symmetry', 'Fractal Dimension']
 
@@ -55,7 +64,9 @@ def get_radar_chart(input_data):
                input_data['fractal_dimension_worst']]
 
     fig = go.Figure()
+    
     fig.add_trace(go.Scatterpolar(
+
         r=values1,
         theta=categories,
         fill='toself',
@@ -123,6 +134,8 @@ def add_predictions(input_data):
 
 
 def main():
+    
+
     with st.container():
         st.title("Breast Cancer Predictor")
         st.write("Please connect this app to your cytology lab to help diagnose from your tissue sample.")
@@ -141,3 +154,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
